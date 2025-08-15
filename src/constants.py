@@ -3,7 +3,7 @@ import os
 # Directory paths
 DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data"))
 MODEL_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../models")
+    os.path.join(os.path.dirname(__file__), "../ml_models")
 )
 DEPENDENCY_MODEL_DIR = os.path.join(MODEL_DIR, "dependencies")
 TRAINED_MODEL_DIR = os.path.join(MODEL_DIR, "trained_models")

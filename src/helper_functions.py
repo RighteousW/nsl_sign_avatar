@@ -243,23 +243,6 @@ def extract_3D_landmarks_from_frame(frame, hands_landmarker, use_enhanced_featur
     return landmarks_data
 
 
-def extract_3D_landmarks_from_frame_queue(
-    frames_queue, hands_landmarker, use_enhanced_features=True
-):
-    """Process a queue of frames and extract 3D landmarks with optional enhanced features."""
-    landmarks_sequence = []
-
-    while not frames_queue.empty():
-        frame = frames_queue.get()
-        landmarks_sequence.append(extract_3D_landmarks_from_frame(frame, hands_landmarker, use_enhanced_features))
-
-    if not landmarks_sequence:
-        print("No landmarks extracted from frames.")
-        return False
-
-    return landmarks_sequence
-
-
 def save_model(model, filepath):
     """
     Save model using the modern Keras format (.keras) instead of legacy HDF5 (.h5)

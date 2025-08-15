@@ -7,7 +7,7 @@ import mediapipe as mp
 
 # Add parent directory to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from constants import FRAME_RATE, VIDEO_WIDTH, VIDEO_HEIGHT
+from constants import FRAME_RATE, VIDEO_WIDTH, VIDEO_HEIGHT, MODEL_DIR, TRAINED_MODEL_DIR
 from helper_functions import extract_3D_landmarks_from_frame, load_model
 
 
@@ -120,6 +120,9 @@ class GestureRecognizer:
             print(f"Error in prediction: {e}")
             return None, 0.0
 
+    def smart_clear(self, frames_to_pop):
+        for _ in range(0, frames_to_pop):
+            self.frame_buffer.pop(0)
 
 def main():
     """Main function for real-time gesture recognition"""
@@ -140,19 +143,16 @@ def main():
     )
 
     # Initialize gesture recognizer
-    model_dir = "models/trained_models"
     gesture_recognizer = GestureRecognizer(
         model_path=os.path.join(
-            model_dir, "rnn_bidirectional_lstm_landmarks_gesture_model.keras"
+            TRAINED_MODEL_DIR, "rnn_bidirectional_lstm_landmarks_gesture_model.keras"
         ),
-        scaler_path=os.path.join(model_dir, "scaler.pkl"),
-        label_encoder_path=os.path.join(model_dir, "label_encoder.pkl"),
+        scaler_path=os.path.join(TRAINED_MODEL_DIR, "scaler.pkl"),
+        label_encoder_path=os.path.join(TRAINED_MODEL_DIR, "label_encoder.pkl"),
     )
 
     frame_count = 0
     last_prediction = ""
-    prediction_stability_count = 0
-    min_stability_frames = 5  # Require stable prediction for 5 frames
 
     try:
         while True:
@@ -173,35 +173,28 @@ def main():
 
             # Make prediction if we have enough frames
             if (
-                gesture_recognizer.can_predict() and frame_count % 3 == 0
-            ):  # Predict every 3 frames
+                gesture_recognizer.can_predict() and frame_count % 15 == 0
+            ): # inference every 15 frames
                 prediction, confidence = gesture_recognizer.predict_gesture()
 
                 if prediction and confidence > gesture_recognizer.min_confidence:
-                    # Check for prediction stability
-                    if prediction == last_prediction:
-                        prediction_stability_count += 1
-                    else:
-                        prediction_stability_count = 1
-                        last_prediction = prediction
-
-                    # Only display stable predictions
-                    if prediction_stability_count >= min_stability_frames:
+                    gesture_recognizer.smart_clear(10)
+                    frame_count -= 10
+                    
+                    
+                    if prediction != last_prediction:
                         print(f"Gesture: {prediction} (Confidence: {confidence:.2f})")
-
-                        # Draw prediction on frame
-                        cv2.putText(
-                            frame,
-                            f"{prediction}: {confidence:.2f}",
-                            (10, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX,
-                            1,
-                            (0, 255, 0),
-                            2,
-                        )
-                else:
-                    prediction_stability_count = 0
-                    last_prediction = ""
+                    last_prediction = prediction
+                    # Draw prediction on frame
+                    cv2.putText(
+                        frame,
+                        f"{prediction}: {confidence:.2f}",
+                        (10, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        1,
+                        (0, 255, 0),
+                        2,
+                    )
 
             # Draw hand landmarks on frame for debugging
             if (
@@ -232,11 +225,9 @@ def main():
     except Exception as e:
         print(f"Error during inference: {e}")
     finally:
-        # Cleanup
         cap.release()
         cv2.destroyAllWindows()
         hands_landmarker.close()
-        print("Cleanup completed")
 
 
 if __name__ == "__main__":

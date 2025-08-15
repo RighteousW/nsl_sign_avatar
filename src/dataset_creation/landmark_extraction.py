@@ -28,7 +28,7 @@ def main():
     print("Enhanced Features: Using XYZ coordinates + geometric features")
     print("Benefits: Better discrimination between similar signs (U vs V)")
     print("Feature Options:")
-    print("   - Basic 3D: 126 features (2 hands × 21 landmarks × 3 coords)")
+    print("   - Basic 3D: 126 features (2 hands x 21 landmarks x 3 coords)")
     print("   - Enhanced 3D: 176 features (+ fingertip distances + finger angles)")
 
     # Setup
@@ -164,10 +164,10 @@ def main():
         print(f"   • Base 3D coordinates: 126 features")
         print(f"   • Fingertip distances: 10 features")
         print(f"   • Finger orientation vectors: 15 features")
-        print(f"   • Total per hand: 88 features × 2 hands = 176")
+        print(f"   • Total per hand: 88 features x 2 hands = 176")
     else:
         print(f"Basic 3D feature dimensions: 126 per frame")
-        print(f"   • XYZ coordinates: 2 hands × 21 landmarks × 3 coords = 126")
+        print(f"   • XYZ coordinates: 2 hands x 21 landmarks x 3 coords = 126")
 
     if processed_count > 0:
         avg_time = elapsed_time / processed_count

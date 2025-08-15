@@ -4,7 +4,14 @@ import sys
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, GRU, Dense, Dropout, BatchNormalization
+from tensorflow.keras.layers import (
+    LSTM,
+    GRU,
+    Dense,
+    Dropout,
+    BatchNormalization,
+    Bidirectional,
+)
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from sklearn.model_selection import train_test_split
@@ -371,8 +378,6 @@ def build_rnn_model(input_shape, num_classes, model_type="lstm"):
         model.add(BatchNormalization(name="batch_norm_2"))
 
     elif model_type == "bidirectional_lstm":
-        from tensorflow.keras.layers import Bidirectional
-
         model.add(
             Bidirectional(
                 LSTM(64, return_sequences=True),
